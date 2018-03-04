@@ -1,4 +1,4 @@
-#!/home/shay/development/budget/budget_env/bin/python
+#!/home/shay/development/budget/budget_env/bin/python3
 
 # -*- coding: utf-8 -*-
 import re
