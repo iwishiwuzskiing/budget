@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/home/shay/development/budget/budget_env/bin/python
 
 from __future__ import print_function
 import httplib2
@@ -50,7 +50,7 @@ def get_credentials():
         print('Storing credentials to ' + credential_path)
     return credentials
 
-def main():
+def get_transactions():
     """Shows basic usage of the Sheets API.
 
     Creates a Sheets API service object and prints the names and majors of
@@ -80,6 +80,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    get_transactions()
 
 
