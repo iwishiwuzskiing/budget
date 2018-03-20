@@ -50,13 +50,8 @@ def get_credentials():
         print('Storing credentials to ' + credential_path)
     return credentials
 
+# Get the transactions for each account
 def get_transactions():
-    """Shows basic usage of the Sheets API.
-
-    Creates a Sheets API service object and prints the names and majors of
-    students in a sample spreadsheet:
-    https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
-    """
     credentials = get_credentials()
     http = credentials.authorize(httplib2.Http())
     discoveryUrl = ('https://sheets.googleapis.com/$discovery/rest?'
@@ -65,10 +60,30 @@ def get_transactions():
                               discoveryServiceUrl=discoveryUrl)
 
     spreadsheetId = '16dUOyWq_X-yehuLJid6INSiE1rvpRU0TdnLL8-pGV3k'
-    rangeName = 'Transactions!A2:E'
+    rangeName = 'Transactions!A2:N'
     result = service.spreadsheets().values().get(
         spreadsheetId=spreadsheetId, range=rangeName).execute()
     values = result.get('values', [])
+    return values
+
+# Get account balances by date
+def get_balances():
+    credentials = get_credentials()
+    http = credentials.authorize(httplib2.Http())
+    discoveryUrl = ('https://sheets.googleapis.com/$discovery/rest?'
+                    'version=v4')
+    service = discovery.build('sheets', 'v4', http=http,
+                              discoveryServiceUrl=discoveryUrl)
+
+    spreadsheetId = '16dUOyWq_X-yehuLJid6INSiE1rvpRU0TdnLL8-pGV3k'
+    rangeName = 'Balance History!A2:K'
+    result = service.spreadsheets().values().get(
+        spreadsheetId=spreadsheetId, range=rangeName).execute()
+    values = result.get('values', [])
+    return values
+
+if __name__ == '__main__':
+    values = get_transactions()
 
     if not values:
         print('No data found.')
@@ -78,8 +93,5 @@ def get_transactions():
             # Print columns A and E, which correspond to indices 0 and 4.
             print('%s, %s' % (row[0], row[4]))
 
-
-if __name__ == '__main__':
-    get_transactions()
 
 
