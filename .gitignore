@@ -1,0 +1,6 @@
+*.txt.user
+*~
+*.autosave
+*#
+build*
+__pycache__
