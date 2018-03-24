@@ -1,5 +1,5 @@
-#ifndef SO_PY_OBJECT_H
-#define SO_PY_OBJECT_H
+#ifndef SO_PYTHON_OBJECT_H
+#define SO_PYTHON_OBJECT_H
 #include <string>
 #include <Python.h>
 #include <sno/so_exception.h>

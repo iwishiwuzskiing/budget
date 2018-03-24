@@ -9,8 +9,9 @@ class Python_function
 public:
   Python_function(so::Python_object module, std::string name)
     :
+      m_func(nullptr)
   {
-
+    pFunc = PyObject_GetAttrString(module.Get(), name.c_str());
   }
 
 private:
