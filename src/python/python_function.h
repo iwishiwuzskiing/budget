@@ -37,6 +37,7 @@ public:
     {
       //
     }
+    return so::Python_object(out, false).As<R_type>();
   }
 
 private:

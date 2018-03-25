@@ -4,6 +4,8 @@
 #include <Python.h>
 #include <sno/so_exception.h>
 #include <tuple>
+#include <vector>
+
 namespace so
 {
 class Python_object
@@ -79,7 +81,11 @@ public:
    * @throws so::runtime_error if this object cannot be converted to T
    */
   template<class T>
-  T As() const;
+  T As() const
+  {
+    T out;
+    return get_as(out);
+  }
 
 private:
   /**
@@ -87,16 +93,62 @@ private:
    */
   PyObject* m_obj;
 
+  /**
+   * @brief Base case for populating py_tuple, does nothing
+   */
   template<std::size_t I = 0, typename... Tp>
   inline typename std::enable_if<I == sizeof...(Tp), void>::type
   make_pytuple(std::tuple<Tp...>&, PyObject*)
   { }
 
+  /**
+   * @brief Populate a python tuple from a std::tuple
+   * @param[in] t C++ tuple to populate python tuple from
+   * @param[out] py_tuple Python tuple to be populated
+   */
   template<std::size_t I = 0, typename... Tp>
   inline typename std::enable_if<I < sizeof...(Tp), void>::type
   make_pytuple(std::tuple<Tp...>& t, PyObject* py_tuple)
   {
     PyTuple_SetItem(py_tuple, I, so::Python_object(std::get<I>(t)).Get());
+  }
+
+  /**
+   * @brief Get this object as a double
+   * @param[out] dbl Object as a double
+   * @throws so::runtime_exception if this object cannot be represented as a double
+   */
+  void get_as(double& dbl) const;
+
+  /**
+   * @brief Get this object as a string
+   * @param[out] str String representing this object
+   * @throws so::runtime_exception if this object cannot be represented as a string
+   */
+  void get_as(std::string& str) const;
+
+  /**
+   * @brief Get this object as a vector.
+   * Strong exception guarantee.
+   * @param[out] vec Vector to populate
+   * @throws so::runtime_exception if this object cannot be converted into the
+   * specified type of vector
+   */
+  template<class T>
+  void get_as(std::vector<T>& vec) const
+  {
+    if(!PySequence_Check(m_obj))
+    {
+      throw so::runtime_error("Object is not a sequence");
+    }
+
+    std::vector<T> out_tmp;
+    Py_ssize_t num = PySequence_Size(m_obj);
+    for(ssize_t k = 0; k < num; k++)
+    {
+      vec.push_back(so::Python_object(PySequence_GetItem(m_obj, k), false).As<T>());
+    }
+    std::swap(vec, out_tmp);
   }
 };
 }

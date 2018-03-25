@@ -36,6 +36,8 @@ so::Python_object Make_pytuple(T...types)
   return so::Python_object(std::make_tuple(types...));
 }
 
+templ
+
 } // namespace Python_utils
 } // namespace so
 #endif
