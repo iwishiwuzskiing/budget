@@ -8,5 +8,5 @@
 std::vector<std::string> read_transactions(std::string & file)
 {
 
-    return data;
+    //return data;
 }

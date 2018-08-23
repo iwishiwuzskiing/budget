@@ -18,7 +18,8 @@ void so::Python_object::get_as(double& dbl) const
  */
 void so::Python_object::get_as(std::string& str) const
 {
-
+  PyObject* repr = PyObject_Repr(m_obj);
+  str = std::string(PyUnicode_AsUTF8(repr));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

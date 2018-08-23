@@ -1,9 +1,9 @@
 #ifndef SO_PYTHON_FUNCTION_H
 #define SO_PYTHON_FUNCTION_H
 #include <vector>
-#include <python_object.h>
+#include <python/python_object.h>
 #include <sno/so_exception.h>
-#include <python_utils.h>
+#include <python/python_utils.h>
 namespace so
 {
 template <class R_type, class ... Args>
@@ -15,10 +15,10 @@ public:
       m_func(nullptr)
   {
     //TODO: check if module is valid
-    PyObject* func = PyObject_GetAttrString(module.Get(), name.c_str());
-    if(!PyCallable_Check(func))
+    m_func = PyObject_GetAttrString(module.Get(), name.c_str());
+    if(!m_func || !PyCallable_Check(m_func))
     {
-      throw(so::runtime_error(" Not a valid function"));
+      throw(so::runtime_error("Not a valid function"));
     }
   }
 

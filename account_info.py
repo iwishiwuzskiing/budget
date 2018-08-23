@@ -8,12 +8,12 @@ from apiclient import discovery
 from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
-
-try:
-    import argparse
-    flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
-except ImportError:
-    flags = None
+import sys
+#try:
+#    import argparse
+#    flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
+#except ImportError:
+#    flags = None
 
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/sheets.googleapis.com-python-quickstart.json
@@ -52,7 +52,9 @@ def get_credentials():
 
 # Get the transactions for each account
 def get_transactions():
+    print('Getting credentials')
     credentials = get_credentials()
+    print('Authorizing')
     http = credentials.authorize(httplib2.Http())
     discoveryUrl = ('https://sheets.googleapis.com/$discovery/rest?'
                     'version=v4')
@@ -61,9 +63,12 @@ def get_transactions():
 
     spreadsheetId = '16dUOyWq_X-yehuLJid6INSiE1rvpRU0TdnLL8-pGV3k'
     rangeName = 'Transactions!A2:N'
+    print('Getting data')
     result = service.spreadsheets().values().get(
         spreadsheetId=spreadsheetId, range=rangeName).execute()
+    print('Extracting transactions')
     values = result.get('values', [])
+    print('Done!')
     return values
 
 # Get account balances by date

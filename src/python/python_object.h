@@ -15,7 +15,8 @@ public:
    * @brief Constructor, a wrapper around the provided python object
    * @param obj Python object to wrap
    * @param incref True if the reference count for this object should be
-   * increased
+   * increased. The reference count only needs to be increased if this
+   * Python_object is being initialized with a borrowed reference
    */
   Python_object(PyObject* obj, bool incref = true)
     :
@@ -84,7 +85,8 @@ public:
   T As() const
   {
     T out;
-    return get_as(out);
+    get_as(out);
+    return out;
   }
 
 private:
@@ -98,7 +100,7 @@ private:
    */
   template<std::size_t I = 0, typename... Tp>
   inline typename std::enable_if<I == sizeof...(Tp), void>::type
-  make_pytuple(std::tuple<Tp...>&, PyObject*)
+  make_pytuple(const std::tuple<Tp...>&, PyObject*)
   { }
 
   /**
@@ -108,9 +110,10 @@ private:
    */
   template<std::size_t I = 0, typename... Tp>
   inline typename std::enable_if<I < sizeof...(Tp), void>::type
-  make_pytuple(std::tuple<Tp...>& t, PyObject* py_tuple)
+  make_pytuple(const std::tuple<Tp...>& t, PyObject* py_tuple)
   {
     PyTuple_SetItem(py_tuple, I, so::Python_object(std::get<I>(t)).Get());
+    make_pytuple<I + 1, Tp...>(t, py_tuple);
   }
 
   /**
@@ -142,11 +145,12 @@ private:
       throw so::runtime_error("Object is not a sequence");
     }
 
+    // Populate a temporary object in case creation fails
     std::vector<T> out_tmp;
     Py_ssize_t num = PySequence_Size(m_obj);
     for(ssize_t k = 0; k < num; k++)
     {
-      vec.push_back(so::Python_object(PySequence_GetItem(m_obj, k), false).As<T>());
+      out_tmp.push_back(so::Python_object(PySequence_GetItem(m_obj, k), false).As<T>());
     }
     std::swap(vec, out_tmp);
   }

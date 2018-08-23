@@ -2,7 +2,8 @@
 #define SO_PYTHON_UTILS_H
 
 #include <string>
-#include <python_object.h>
+#include <python/python_object.h>
+#include <wchar.h>
 namespace so
 {
 namespace Python_utils
@@ -15,11 +16,10 @@ namespace Python_utils
  */
 so::Python_object Import_module(const std::string name)
 {
-  so::Python_object py_name(name);
-  so::Python_object module(PyImport_Import(py_name.Get()), false);
+  so::Python_object module(PyImport_ImportModule(name.c_str()), false);
   if(!module.Get())
   {
-    throw so::runtime_error("Failed to load module" + name);
+    throw so::runtime_error("Failed to load module '" + name + "'");
   }
   return module;
 }
@@ -36,7 +36,10 @@ so::Python_object Make_pytuple(T...types)
   return so::Python_object(std::make_tuple(types...));
 }
 
-templ
+wchar_t** char_array_wchar_array(int argc, char** argv)
+{
+
+}
 
 } // namespace Python_utils
 } // namespace so
