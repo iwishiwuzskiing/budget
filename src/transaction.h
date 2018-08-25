@@ -7,6 +7,26 @@
 class Transaction
 {
 public:
+  /**
+   * @brief Constructor, a new transaction from a string array describing the
+   * transaction. The array must have 14 elements:
+   * 0    Date (MM/DD/YYYY
+   * 1    Description
+   * 2    Short description
+   * 3    Full description
+   * 4    Amount
+   * 5    Category
+   * 6    Account
+   * 7    Account #
+   * 8    Institution
+   * 9    Check number
+   * 10   Month (starting day)
+   * 11   Week  (starting day)
+   * 12   Transaction ID
+   * 13   Date Added
+   * @param transaction Vector describing the transaction
+   */
+  Transaction(const std::vector<std::string> transaction);
 
 protected:
 

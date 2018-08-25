@@ -1,21 +1,31 @@
 #include <python/python_object.h>
 
 ////////////////////////////////////////////////////////////////////////////////
-/**
- * @brief Get this object as a double
- * @param[out] dbl Object as a double
- * @throws so::runtime_exception if this object cannot be represented as a double
- */
-void so::Python_object::get_as(double& dbl) const
-{
 
+void so::Python_object::get_as(Python_object& obj) const
+{
+  obj = so::Python_object(m_obj, true);
 }
 
-/**
- * @brief Get this object as a string
- * @param[out] str String representing this object
- * @throws so::runtime_exception if this object cannot be represented as a string
- */
+////////////////////////////////////////////////////////////////////////////////
+
+void so::Python_object::get_as(double& dbl) const
+{
+  PyErr_Clear(); //TODO: PyErr_Fetch() then PyErr_Restore() instead?
+  double temp_d = PyFloat_AsDouble(m_obj);
+  PyObject* err = PyErr_Occurred();
+  if(err)
+  {
+    throw so::runtime_error("Failed to convert object to double");
+  }
+  else
+  {
+    dbl = temp_d;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 void so::Python_object::get_as(std::string& str) const
 {
   PyObject* repr = PyObject_Repr(m_obj);

@@ -8,15 +8,31 @@
 
 namespace so
 {
+/**
+ * @brief The Python_object class wraps a pointer to a PyObject.
+ * The class will automatically decrement the pointer's reference count when
+ * it is destructed.
+ * The class provides a number of convenience functions to convert between
+ * C++ data types and PyObjects
+ *
+ * @note This class wraps a pointer, copy and assignment operations will
+ * therefore always be shallow operations.
+ *
+ */
 class Python_object
 {
 public:
   /**
    * @brief Constructor, a wrapper around the provided python object
+   * The class will automatically decrement the pointer's reference count when
+   * it is destructed. As such, if the class is constructed by copying a
+   * borrowed reference the reference count must be incremented at construction.
+   * If obj is a new reference the reference count should not be incremented
    * @param obj Python object to wrap
    * @param incref True if the reference count for this object should be
-   * increased. The reference count only needs to be increased if this
-   * Python_object is being initialized with a borrowed reference
+   * increased. The reference count should be increased if this Python_object is
+   * being initialized with a borrowed reference. If obj is a new reference then
+   * the reference count should not be incremented
    */
   Python_object(PyObject* obj, bool incref = true)
     :
@@ -24,7 +40,7 @@ public:
   {
     if(incref)
     {
-      Py_IncRef(m_obj);
+      Py_XINCREF(m_obj);
     }
   }
 
@@ -59,13 +75,49 @@ public:
     make_pytuple(tuple, m_obj);
   }
 
+
+  /**
+   * @brief Copy constructor. A new Python object storing the same object
+   * (i.e. a shallow copy) of the other python object
+   * TODO: deep copy?
+   * @param other
+   */
+  Python_object(const Python_object& other)
+  {
+    Py_XDECREF(m_obj);
+    m_obj = other.m_obj;
+    Py_XINCREF(m_obj);
+  }
+
+  /**
+   * @brief Assignment operator. Creates a shallow copy of other
+   * @param other Python object to copy
+   * @return Python object that is a shallow copy of other
+   */
+  Python_object& operator=(Python_object other)
+  {
+    swap(*this, other);
+    return *this;
+  }
+
+  //TODO: define move assignment and move constructor.
+  // Need special semantics to ensure reference counts stay correct, so left deleted
+  Python_object(Python_object&& other)
+  {
+    swap(*this, other);
+  }
+
   /**
    * Destructor, decrements the reference count
    */
   ~Python_object()
   {
-    Py_DecRef(m_obj);
+    Py_XDECREF(m_obj);
   }
+
+
+
+  //TODO: copy constructor, assignment operator, move constructor, move assignment operator
 
   /**
    * @brief Get the raw PyObject that is being managed
@@ -96,6 +148,22 @@ private:
   PyObject* m_obj;
 
   /**
+   * @brief Swap the contents of two Python_objects.
+   * Assumes that reference counts are correct beforehand, thus no need to
+   * modify reference counts when swapping
+   * @param[in,out] first First object, whose contents should be swapped with second
+   * @param[in,out] second Second object whose contents should be swapped with first
+   */
+  friend void swap(Python_object& first, Python_object& second) // nothrow
+  {
+    // enable ADL
+    using std::swap;
+
+    // Swap
+    swap(first.m_obj, second.m_obj);
+  }
+
+  /**
    * @brief Base case for populating py_tuple, does nothing
    */
   template<std::size_t I = 0, typename... Tp>
@@ -117,6 +185,13 @@ private:
   }
 
   /**
+   * @brief Trivial conversion for the As() function. Get this object as a
+   * Python object.
+   * @param[out] obj Object as a Python object
+   */
+  void get_as(Python_object& obj) const;
+
+  /**
    * @brief Get this object as a double
    * @param[out] dbl Object as a double
    * @throws so::runtime_exception if this object cannot be represented as a double
@@ -124,7 +199,7 @@ private:
   void get_as(double& dbl) const;
 
   /**
-   * @brief Get this object as a string
+   * @brief Get this object as a string, as with the repr() function in python
    * @param[out] str String representing this object
    * @throws so::runtime_exception if this object cannot be represented as a string
    */

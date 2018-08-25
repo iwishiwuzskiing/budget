@@ -10,16 +10,24 @@ public:
   virtual ~Transaction_importer(){}
 
   /**
-   * @brief Get any new transactions for the provided account
-   * @param[out] db Database to ad transactions to
+   * @brief Read transactions
+   * @return Vector of transaction information
    */
-  void Add_transactions(Transaction_db& db);
+  std::vector<Transaction> Read_transactions()
+  {
+    return read_transactions();
+  }
+
+  /**
+   * @brief Get any new transactions for the provided account
+   * @param[out] db Database to add transactions to
+   */
+//  void Add_transactions(Transaction_db& db);
 
 private:
   /**
-   * @brief Get any new transactions for the provided account
-   * @param[out] acct Account to get transactions for
+   * @brief Get a list of transactions
+   * @return List of transactions
    */
-  virtual void add_transactions() = 0;
-private:
+  virtual std::vector<Transaction> read_transactions() = 0;
 };

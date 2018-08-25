@@ -3,7 +3,7 @@
 
 #include <string>
 #include <python/python_object.h>
-#include <wchar.h>
+
 namespace so
 {
 namespace Python_utils
@@ -14,15 +14,7 @@ namespace Python_utils
  * @return Python_object containing the loaded module
  * @throws so::runtime_error if the module can't be loaded
  */
-so::Python_object Import_module(const std::string name)
-{
-  so::Python_object module(PyImport_ImportModule(name.c_str()), false);
-  if(!module.Get())
-  {
-    throw so::runtime_error("Failed to load module '" + name + "'");
-  }
-  return module;
-}
+so::Python_object Import_module(const std::string name);
 
 /**
  * @brief Make a python tuple from a set of values
@@ -36,10 +28,6 @@ so::Python_object Make_pytuple(T...types)
   return so::Python_object(std::make_tuple(types...));
 }
 
-wchar_t** char_array_wchar_array(int argc, char** argv)
-{
-
-}
 
 } // namespace Python_utils
 } // namespace so
