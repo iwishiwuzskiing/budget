@@ -27,7 +27,7 @@ public:
    * @param args Arguments passed to the function
    * @return output of the function
    */
-  R_type operator()(Args ... args)
+  R_type operator()(Args... args)
   {
     //Unpack params into arg_tuple
     so::Python_object arg_tuple = so::Python_utils::Make_pytuple(args...);

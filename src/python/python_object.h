@@ -30,9 +30,10 @@ public:
    * If obj is a new reference the reference count should not be incremented
    * @param obj Python object to wrap
    * @param incref True if the reference count for this object should be
-   * increased. The reference count should be increased if this Python_object is
-   * being initialized with a borrowed reference. If obj is a new reference then
-   * the reference count should not be incremented
+   * increased. This class will always decrement the reference count when
+   * destructed, so the reference count should be increased if this
+   * Python_object is being initialized with a borrowed reference. If obj is a
+   * new reference then the reference count should not be incremented
    */
   Python_object(PyObject* obj, bool incref = true)
     :
@@ -79,11 +80,11 @@ public:
   /**
    * @brief Copy constructor. A new Python object storing the same object
    * (i.e. a shallow copy) of the other python object
-   * TODO: deep copy?
    * @param other
    */
   Python_object(const Python_object& other)
   {
+    // Remove any previously held references
     Py_XDECREF(m_obj);
     m_obj = other.m_obj;
     Py_XINCREF(m_obj);
@@ -114,8 +115,6 @@ public:
   {
     Py_XDECREF(m_obj);
   }
-
-
 
   //TODO: copy constructor, assignment operator, move constructor, move assignment operator
 

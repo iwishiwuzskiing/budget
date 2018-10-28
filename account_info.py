@@ -9,10 +9,10 @@ from oauth2client import client
 from oauth2client import tools
 from oauth2client.file import Storage
 import sys
-#try:
+# try:
 #    import argparse
 #    flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
-#except ImportError:
+# except ImportError:
 #    flags = None
 
 # If modifying these scopes, delete your previously saved credentials
@@ -45,10 +45,11 @@ def get_credentials():
         flow.user_agent = APPLICATION_NAME
         if flags:
             credentials = tools.run_flow(flow, store, flags)
-        else: # Needed only for compatibility with Python 2.6
+        else:  # Needed only for compatibility with Python 2.6
             credentials = tools.run(flow, store)
         print('Storing credentials to ' + credential_path)
     return credentials
+
 
 # Get the transactions for each account
 def get_transactions():
@@ -71,6 +72,7 @@ def get_transactions():
     print('Done!')
     return values
 
+
 # Get account balances by date
 def get_balances():
     credentials = get_credentials()
@@ -87,6 +89,7 @@ def get_balances():
     values = result.get('values', [])
     return values
 
+
 if __name__ == '__main__':
     values = get_transactions()
 
@@ -97,6 +100,3 @@ if __name__ == '__main__':
         for row in values:
             # Print columns A and E, which correspond to indices 0 and 4.
             print('%s, %s' % (row[0], row[4]))
-
-
-
