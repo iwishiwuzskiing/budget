@@ -18,7 +18,7 @@ Transaction::Transaction(const std::vector<std::string> transaction)
 {
   if(transaction.size() != 14)
   {
-    Log_msg(Logger::Warning) << "Invalid transaction. Expected 14 fields but found " << transaction.size() << std::endl;
+    so::Log_msg(so::Logger::Warning) << "Invalid transaction. Expected 14 fields but found " << transaction.size() << std::endl;
     throw so::Invalid_argument("Invalid transaction, wrong number of fields");
   }
   m_id = transaction[12];
@@ -34,7 +34,7 @@ Transaction::Transaction(const std::vector<std::string> transaction)
   }
   catch(std::invalid_argument)
   {
-    Log_msg(Logger::Warning) << "Failed to read transaction: Invalid amount '"
+    so::Log_msg(so::Logger::Warning) << "Failed to read transaction: Invalid amount '"
                              << transaction[4] << std::endl;
     throw so::Invalid_argument("Invalid transaction amount: '" + transaction[4] + "'");
   }
@@ -47,7 +47,7 @@ Transaction::Transaction(const std::vector<std::string> transaction)
   }
   catch(std::exception& e)  //TODO: what does this actually throw?
   {
-    Log_msg(Logger::Warning) << "Failed to read transaction: Invalid date '"
+    so::Log_msg(so::Logger::Warning) << "Failed to read transaction: Invalid date '"
                              << transaction[0] << "' - " << e.what() << std::endl;
     throw so::Invalid_argument("Invalid transaction date: '" + transaction[0] + "'");
   }

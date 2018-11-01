@@ -1,7 +1,7 @@
-#include <python/python_object.h>
-#include <python/python_utils.h>
-#include <python/python_function.h>
-#include <python/python_interpreter.h>
+#include <sno/python/python_object.h>
+#include <sno/python/python_utils.h>
+#include <sno/python/python_function.h>
+#include <sno/python/python_interpreter.h>
 #include <sno/logger.h>
 
 #include <google_sheets_importer.h>
@@ -30,10 +30,10 @@ std::vector<std::vector<std::string>> Get_transactions()
     so::Python_function<std::vector<std::vector<std::string> > >
         get_transactions(acct_info, "get_transactions");
     transactions = get_transactions();
-    Log_msg(Logger::Debug) << "Retrieved " << transactions.size() << " transactions";
+    so::Log_msg(so::Logger::Debug) << "Retrieved " << transactions.size() << " transactions";
   } catch (std::exception& e)
   {
-    Log_msg(Logger::Debug) << "Failed to get transactions: " << e.what();
+    so::Log_msg(so::Logger::Debug) << "Failed to get transactions: " << e.what();
   }
   return transactions;
 }
